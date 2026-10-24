@@ -1,0 +1,49 @@
+{
+  "site": {
+    "base_url": "https://www.bidding.csg.cn",
+    "list_path": "/ggxx/index.jhtml",
+    "page_path": "/ggxx/index_{page}.jhtml",
+    "max_pages": 3
+  },
+  "keywords": {
+    "include": [
+      "服务器",
+      "交换机",
+      "路由器",
+      "防火墙",
+      "存储",
+      "数据库",
+      "信息安全",
+      "网络安全",
+      "软件",
+      "运维",
+      "数字化",
+      "智能化",
+      "信创"
+    ],
+    "exclude": [
+      "中标结果",
+      "中标候选人",
+      "流标",
+      "失败公告"
+    ],
+    "match_mode": "any",
+    "fetch_detail": true,
+    "detail_max_items": 40
+  },
+  "push": {
+    "channels": [],
+    "title_prefix": "【南网招标】",
+    "max_items_per_message": 5
+  },
+  "history": {
+    "retention_days": 180,
+    "max_entries": 10000,
+    "first_run_silent": true
+  },
+  "request": {
+    "timeout": 20,
+    "retries": 3,
+    "delay_seconds": 0.8
+  }
+}

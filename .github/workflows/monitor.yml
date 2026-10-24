@@ -1,0 +1,89 @@
+name: 南网招标监控
+
+on:
+  schedule:
+    # GitHub cron 使用 UTC；01:00 UTC = 北京时间 09:00
+    # 定时任务可能有几分钟到几十分钟的延迟，属于正常现象
+    - cron: "0 1 * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "只抓取和匹配，不推送"
+        required: false
+        type: boolean
+        default: false
+      seed:
+        description: "仅初始化历史记录，不推送"
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: csg-bidding-monitor
+  cancel-in-progress: false
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      TZ: Asia/Shanghai
+      DRY_RUN: ${{ inputs.dry_run && '1' || '0' }}
+      SEED: ${{ inputs.seed && '1' || '0' }}
+      # 可选：仓库 Settings -> Variables 中配置，覆盖 config.json
+      PUSH_CHANNELS: ${{ vars.PUSH_CHANNELS }}
+      INCLUDE_KEYWORDS: ${{ vars.INCLUDE_KEYWORDS }}
+      EXCLUDE_KEYWORDS: ${{ vars.EXCLUDE_KEYWORDS }}
+      MATCH_MODE: ${{ vars.MATCH_MODE }}
+      FETCH_DETAIL: ${{ vars.FETCH_DETAIL }}
+      MAX_PAGES: ${{ vars.MAX_PAGES }}
+      # 推送渠道密钥：仓库 Settings -> Secrets and variables -> Actions -> Secrets
+      PUSHPLUS_TOKEN: ${{ secrets.PUSHPLUS_TOKEN }}
+      SERVERCHAN_SENDKEY: ${{ secrets.SERVERCHAN_SENDKEY }}
+      WECOM_WEBHOOK: ${{ secrets.WECOM_WEBHOOK }}
+      DINGTALK_WEBHOOK: ${{ secrets.DINGTALK_WEBHOOK }}
+      DINGTALK_SECRET: ${{ secrets.DINGTALK_SECRET }}
+      FEISHU_WEBHOOK: ${{ secrets.FEISHU_WEBHOOK }}
+      FEISHU_SECRET: ${{ secrets.FEISHU_SECRET }}
+      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+      BARK_KEY: ${{ secrets.BARK_KEY }}
+      BARK_URL: ${{ secrets.BARK_URL }}
+      WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
+      WEBHOOK_TOKEN: ${{ secrets.WEBHOOK_TOKEN }}
+
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 安装 Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: 安装依赖
+        run: pip install -r requirements.txt
+
+      - name: 抓取并推送
+        run: python main.py -v
+
+      - name: 提交去重记录
+        if: always()
+        run: |
+          if [ -z "$(git status --porcelain data/seen.json)" ]; then
+            echo "去重记录没有变化，无需提交"
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/seen.json
+          git commit -m "chore: 更新公告去重记录 [skip ci]"
+
+          # 避免与其他提交冲突
+          git pull --rebase --autostash origin "$GITHUB_REF_NAME" || true
+          git push
