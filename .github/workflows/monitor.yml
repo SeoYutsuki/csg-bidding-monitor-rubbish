@@ -18,7 +18,7 @@ on:
         type: boolean
         default: false
       test_push:
-        description: "发送一条测试消息（不抓取、不写状态）"
+        description: "完整运行一次程序，并额外发送一条测试消息（会更新去重记录）"
         required: false
         type: boolean
         default: false

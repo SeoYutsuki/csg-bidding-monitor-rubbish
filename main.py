@@ -169,6 +169,10 @@ def now_cst() -> datetime:
     return datetime.now(CST)
 
 
+def env_flag(name: str) -> bool:
+    return os.environ.get(name, "").strip().lower() in {"1", "true", "yes", "on"}
+
+
 def load_state(path: Path) -> dict[str, Any]:
     if not path.exists():
         return {"version": 1, "updated_at": None, "items": {}, "pending": []}
@@ -487,7 +491,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--max-pages", type=int, default=None, help="覆盖配置中的最大抓取页数")
     parser.add_argument("--dry-run", action="store_true", help="只打印结果，不推送也不写状态")
     parser.add_argument("--seed", action="store_true", help="只记录当前公告为已见，不推送")
-    parser.add_argument("--test-push", action="store_true", help="发送一条测试消息，不抓取、不写状态")
+    parser.add_argument("--test-push", action="store_true", help="完整运行一次监控，并额外发送一条测试消息")
     parser.add_argument("-v", "--verbose", action="store_true", help="输出调试日志")
     return parser.parse_args(argv)
 
@@ -529,9 +533,9 @@ def run(args: argparse.Namespace) -> int:
     config = load_config(args.config)
     apply_env_overrides(config)
 
-    test_push = args.test_push or os.environ.get("TEST_PUSH", "").strip().lower() in {"1", "true", "yes", "on"}
-    if test_push:
-        return send_test_push(config, now_cst())
+    test_mode = args.test_push or env_flag("TEST_PUSH")
+    if test_mode:
+        log.info("测试模式：先完整运行一次监控程序，结束后再发送一条测试消息")
 
     max_pages = args.max_pages or int(os.environ.get("MAX_PAGES") or config["site"].get("max_pages", 3))
     max_pages = max(1, max_pages)
@@ -550,9 +554,13 @@ def run(args: argparse.Namespace) -> int:
     session = make_session(config)
     new_items = collect_new_items(config, state, session, max_pages)
 
-    seed = args.seed or os.environ.get("SEED", "").strip().lower() in {"1", "true", "yes", "on"}
-    dry_run = args.dry_run or os.environ.get("DRY_RUN", "").strip().lower() in {"1", "true", "yes", "on"}
-    first_run_silent = bool(config["history"].get("first_run_silent", True)) and state_was_empty
+    seed = args.seed or env_flag("SEED")
+    dry_run = args.dry_run or env_flag("DRY_RUN")
+    first_run_silent = (
+        bool(config["history"].get("first_run_silent", True))
+        and state_was_empty
+        and not test_mode
+    )
 
     if seed or (first_run_silent and not state["pending"] and not dry_run):
         log.info(
@@ -621,6 +629,8 @@ def run(args: argparse.Namespace) -> int:
     chunk_size = max(1, int(config["push"].get("max_items_per_message", 5)))
     chunks = [batch[i : i + chunk_size] for i in range(0, len(batch), chunk_size)]
     prefix = str(config["push"].get("title_prefix", ""))
+    if test_mode:
+        prefix = f"{prefix}测试运行 "
     failed: list[dict[str, Any]] = []
 
     for index, chunk in enumerate(chunks, 1):
@@ -651,14 +661,30 @@ def main(argv: list[str] | None = None) -> int:
         format="%(asctime)s %(levelname)s %(message)s",
         datefmt="%Y-%m-%d %H:%M:%S",
     )
+    test_mode = args.test_push or env_flag("TEST_PUSH")
     try:
-        return run(args)
+        exit_code = run(args)
     except KeyboardInterrupt:
         log.warning("用户中断")
         return 130
     except Exception:
         log.exception("运行失败")
-        return 1
+        exit_code = 1
+
+    if test_mode:
+        if args.dry_run or env_flag("DRY_RUN"):
+            log.info("dry-run 模式不发送测试消息")
+            return exit_code
+        try:
+            config = load_config(args.config)
+            apply_env_overrides(config)
+            test_code = send_test_push(config, now_cst())
+        except Exception:
+            log.exception("测试消息发送失败")
+            test_code = 1
+        return exit_code or test_code
+
+    return exit_code
 
 
 if __name__ == "__main__":
