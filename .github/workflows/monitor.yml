@@ -17,6 +17,11 @@ on:
         required: false
         type: boolean
         default: false
+      test_push:
+        description: "发送一条测试消息（不抓取、不写状态）"
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -33,6 +38,7 @@ jobs:
       TZ: Asia/Shanghai
       DRY_RUN: ${{ inputs.dry_run && '1' || '0' }}
       SEED: ${{ inputs.seed && '1' || '0' }}
+      TEST_PUSH: ${{ inputs.test_push && '1' || '0' }}
       # 可选：仓库 Settings -> Variables 中配置，覆盖 config.json
       PUSH_CHANNELS: ${{ vars.PUSH_CHANNELS }}
       INCLUDE_KEYWORDS: ${{ vars.INCLUDE_KEYWORDS }}

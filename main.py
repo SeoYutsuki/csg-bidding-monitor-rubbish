@@ -487,13 +487,51 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--max-pages", type=int, default=None, help="覆盖配置中的最大抓取页数")
     parser.add_argument("--dry-run", action="store_true", help="只打印结果，不推送也不写状态")
     parser.add_argument("--seed", action="store_true", help="只记录当前公告为已见，不推送")
+    parser.add_argument("--test-push", action="store_true", help="发送一条测试消息，不抓取、不写状态")
     parser.add_argument("-v", "--verbose", action="store_true", help="输出调试日志")
     return parser.parse_args(argv)
+
+
+def send_test_push(config: dict[str, Any], now: datetime) -> int:
+    """向所有已配置渠道发送一条测试消息。"""
+    channels = resolve_channels(config["push"].get("channels") or [], os.environ)
+    if not channels:
+        log.error(
+            "没有可用的推送渠道。请先配置对应密钥（例如 PUSHPLUS_TOKEN、WECOM_WEBHOOK），"
+            "或用 PUSH_CHANNELS 指定渠道。"
+        )
+        return 1
+
+    timestamp = now.strftime("%Y-%m-%d %H:%M")
+    prefix = str(config["push"].get("title_prefix", ""))
+    title = f"{prefix}测试推送 {now.strftime('%m-%d %H:%M')}".strip()
+    item = {
+        "url": config["site"]["base_url"].rstrip("/") + config["site"]["list_path"],
+        "title": "这是一条测试公告，收到即表示推送配置正常",
+        "org": "南网招标监控",
+        "date": now.strftime("%Y-%m-%d"),
+        "keywords": ["测试"],
+    }
+    message = build_messages([item], title, timestamp)
+
+    log.info("使用推送渠道: %s", ", ".join(channels))
+    sent, errors = send_all(channels, title, message, [item], os.environ)
+    if sent:
+        print(f"测试消息已发送：成功 {sent}/{len(channels)} 个渠道")
+        if errors:
+            print("部分渠道失败：" + "; ".join(errors))
+        return 0 if not errors else 1
+    log.error("测试消息发送失败: %s", "; ".join(errors))
+    return 1
 
 
 def run(args: argparse.Namespace) -> int:
     config = load_config(args.config)
     apply_env_overrides(config)
+
+    test_push = args.test_push or os.environ.get("TEST_PUSH", "").strip().lower() in {"1", "true", "yes", "on"}
+    if test_push:
+        return send_test_push(config, now_cst())
 
     max_pages = args.max_pages or int(os.environ.get("MAX_PAGES") or config["site"].get("max_pages", 3))
     max_pages = max(1, max_pages)

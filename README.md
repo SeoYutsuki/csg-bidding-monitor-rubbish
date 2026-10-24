@@ -49,6 +49,15 @@
 
 > 定时任务只会在默认分支上生效。GitHub 的 cron 可能有 5～30 分钟延迟，属正常现象。
 
+### 测试推送
+
+配置好推送密钥后，可以先发一条测试消息确认渠道是否可用：
+
+- 在 **Actions → 南网招标监控 → Run workflow** 中勾选 `test_push`；
+- 或在本地执行 `python main.py --test-push`。
+
+测试模式只发送一条示例消息，不抓取公告、不读写 `data/seen.json`。
+
 ## 推送渠道配置
 
 在仓库 Secrets 中配置任意一个或多个渠道。配置多个时，每次会向所有渠道推送。渠道选择优先级：`PUSH_CHANNELS` 变量 > `config.json` 的 `push.channels` > 自动识别已配置密钥的渠道。
@@ -168,6 +177,9 @@ python main.py --dry-run
 # 只把当前列表写入历史，不推送
 python main.py --seed
 
+# 发一条测试消息到已配置的渠道
+python main.py --test-push
+
 # 正常推送（先设置对应环境变量）
 set PUSHPLUS_TOKEN=你的token       # Windows CMD
 # export PUSHPLUS_TOKEN=你的token  # Linux / macOS / Git Bash
@@ -182,6 +194,7 @@ python main.py
 --max-pages N       覆盖最大抓取页数
 --dry-run           只打印，不推送不写状态
 --seed              只记录历史，不推送
+--test-push         发送一条测试消息，不抓取不写状态
 -v, --verbose       输出调试日志
 ```
 
