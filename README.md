@@ -101,7 +101,7 @@ PUSH_CHANNELS = wecom,dingtalk
       "title": "公告标题",
       "org": "发布单位",
       "date": "2026-10-23",
-      "keywords": ["服务器", "交换机"]
+      "keywords": ["报废", "拍卖"]
     }
   ]
 }
@@ -116,8 +116,8 @@ PUSH_CHANNELS = wecom,dingtalk
 ```json
 {
   "keywords": {
-    "include": ["服务器", "交换机", "网络安全"],
-    "exclude": ["中标结果", "流标"],
+    "include": ["报废", "拍卖", "报废物资", "拍卖会"],
+    "exclude": [],
     "match_mode": "any",
     "fetch_detail": true,
     "detail_max_items": 40
@@ -135,8 +135,8 @@ PUSH_CHANNELS = wecom,dingtalk
 
 | 变量 | 示例 | 说明 |
 | --- | --- | --- |
-| `INCLUDE_KEYWORDS` | `服务器,交换机,防火墙` | 逗号/分号分隔，覆盖 include |
-| `EXCLUDE_KEYWORDS` | `中标结果,流标` | 覆盖 exclude |
+| `INCLUDE_KEYWORDS` | `报废,拍卖` | 逗号/分号分隔，覆盖 include |
+| `EXCLUDE_KEYWORDS` | `中标,流标` | 覆盖 exclude |
 | `MATCH_MODE` | `any` / `all` | 覆盖匹配模式 |
 | `FETCH_DETAIL` | `true` / `false` | 是否抓正文 |
 | `MAX_PAGES` | `3` | 每次最多抓取列表页数 |
