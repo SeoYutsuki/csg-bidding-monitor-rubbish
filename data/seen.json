@@ -363,9 +363,37 @@
       "matched": false,
       "org": "广西博联信息通信技术有限责任公司",
       "title": "广西博联信息通信技术有限责任公司语音交换系统等寻源项目寻源公告"
+    },
+    "https://www.bidding.csg.cn/ggxx/1200448208.jhtml": {
+      "date": "2026-11-03",
+      "first_seen": "2026-11-04T15:07:58+08:00",
+      "matched": false,
+      "org": "贵州送变电有限责任公司",
+      "title": "贵州送变电500千伏望谟输变电工程（变电部分）标识牌属地化采购结果公告"
+    },
+    "https://www.bidding.csg.cn/ggxx/1200448209.jhtml": {
+      "date": "2026-11-03",
+      "first_seen": "2026-11-04T15:07:58+08:00",
+      "matched": false,
+      "org": "贵州送变电有限责任公司",
+      "title": "贵州送变电天生桥局500千伏蓝平甲线边坡应急处置原材料检测等项目属地化采购公告"
+    },
+    "https://www.bidding.csg.cn/ggxx/1200448485.jhtml": {
+      "date": "2026-11-04",
+      "first_seen": "2026-11-04T15:07:58+08:00",
+      "matched": false,
+      "org": "中国南方电网有限责任公司",
+      "title": "南方电网公司2026年11月集团工程采购计划"
+    },
+    "https://www.bidding.csg.cn/ggxx/1200448507.jhtml": {
+      "date": "2026-11-04",
+      "first_seen": "2026-11-04T15:07:58+08:00",
+      "matched": false,
+      "org": "采购服务中心",
+      "title": "南网超高压公司采购计划 （2026年11月发布）"
     }
   },
   "pending": [],
-  "updated_at": "2026-10-31T14:31:08+08:00",
+  "updated_at": "2026-11-04T15:07:58+08:00",
   "version": 1
 }
