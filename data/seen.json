@@ -496,9 +496,51 @@
       "matched": true,
       "org": "南方电网供应链科技（广东）有限公司",
       "title": "海南电网公司2026年第八批报废物资拍卖公告"
+    },
+    "https://www.bidding.csg.cn/ggxx/1200449723.jhtml": {
+      "date": "2026-11-12",
+      "first_seen": "2026-11-14T15:15:27+08:00",
+      "matched": false,
+      "org": "采购管理部",
+      "title": "关于发布南网供应链集团2026年第四季度采购计划（补充3）的公告"
+    },
+    "https://www.bidding.csg.cn/ggxx/1200449750.jhtml": {
+      "date": "2026-11-12",
+      "first_seen": "2026-11-14T15:15:27+08:00",
+      "matched": false,
+      "org": "广东电网有限责任公司",
+      "title": "广东电网有限责任公司 2026 年新型电网实 际场景开放“揭榜制” 、“赛马制”科技项 目竞争性委托公告"
+    },
+    "https://www.bidding.csg.cn/ggxx/1200449779.jhtml": {
+      "date": "2026-11-13",
+      "first_seen": "2026-11-14T15:15:27+08:00",
+      "matched": false,
+      "org": "财务经营部",
+      "title": "2026年南方电网数字电网集团（广东）有限公司高性能移动智能终端框架投标寻源项目寻源公告"
+    },
+    "https://www.bidding.csg.cn/ggxx/1200449780.jhtml": {
+      "date": "2026-11-13",
+      "first_seen": "2026-11-14T15:15:27+08:00",
+      "matched": false,
+      "org": "南方电网数字电网集团有限公司深圳分公司",
+      "title": "2026年南方电网数字电网集团有限公司深圳分公司国产硬件WAF设备投标寻源项目寻源公告"
+    },
+    "https://www.bidding.csg.cn/ggxx/1200449789.jhtml": {
+      "date": "2026-11-12",
+      "first_seen": "2026-11-14T15:15:27+08:00",
+      "matched": false,
+      "org": "采购服务中心",
+      "title": "关于《涉税服务中介机构履约评价规则》的公示"
+    },
+    "https://www.bidding.csg.cn/ggxx/1200449997.jhtml": {
+      "date": "2026-11-13",
+      "first_seen": "2026-11-14T15:15:27+08:00",
+      "matched": false,
+      "org": "广西博联信息通信技术有限责任公司",
+      "title": "广西博联信息通信技术有限责任公司大中小屏联动设备等寻源项目寻源公告"
     }
   },
   "pending": [],
-  "updated_at": "2026-11-12T15:53:07+08:00",
+  "updated_at": "2026-11-14T15:15:27+08:00",
   "version": 1
 }
